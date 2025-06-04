@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -37,7 +37,8 @@ export default function Game() {
     current: number;
   } | null>(null);
   const [storyInput, setStoryInput] = useState("");
-
+  const [stage, setStage] = useState<string | null>(null);
+  const [activeStory, setActiveStory] = useState<string | null>(null);
   useEffect(() => {
     const sock = io("http://localhost:3000");
     setSocket(sock);
@@ -48,6 +49,7 @@ export default function Game() {
           | { message: string; required: number; current: number }
           | {
               cardsOnBoard: Card[];
+              stage: string;
               activeStory: string;
               myCards: Card[];
               players: Player[];
@@ -60,9 +62,19 @@ export default function Game() {
         } else {
           setRoomInfo(null);
         }
+        if ("stage" in state) {
+          setStage((prev) =>
+            _.isEqual(prev, state.stage) ? prev : state.stage
+          );
+        }
         if ("cardsOnBoard" in state) {
           setCardsOnTable((prev) =>
             _.isEqual(prev, state.cardsOnBoard) ? prev : state.cardsOnBoard
+          );
+        }
+        if ("activeStory" in state) {
+          setActiveStory((prev) =>
+            _.isEqual(prev, state.activeStory) ? prev : state.activeStory
           );
         }
         if ("myCards" in state) {
@@ -272,6 +284,21 @@ export default function Game() {
     </div>
   );
 
+  const header = useMemo(() => {
+    switch (stage) {
+      case "wait_for_story":
+        if (amIStoryTeller) {
+          return "Your turn to tell a story";
+        } else {
+          return "Waiting for the storyteller";
+        }
+      case "pick_card":
+        return "Pick the card you think matches this story";
+      case "wait_for_vote":
+        return "Waiting for the votes. If you haven't voted, vote now!";
+    }
+  }, [amIStoryTeller, stage]);
+
   if (roomInfo) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-4 sm:p-8">
@@ -301,8 +328,13 @@ export default function Game() {
         <div className="flex flex-row space-x-4">
           <div className="heading w-full">
             <h1 className="text-center text-amber-300 font-serif text-xl">
-              Still Life Game
-            </h1>{" "}
+              {header}
+            </h1>
+            {activeStory && (
+              <div className="text-center text-amber-300 font-serif text-sm">
+                The current story is: {activeStory}
+              </div>
+            )}
           </div>
         </div>
         <div className="flex flex-row space-x-4">
@@ -324,35 +356,23 @@ export default function Game() {
             </div>
           </div>
           {/* Middle section - 5 cards (3+2 layout) */}
-          <div className="space-y-6 w-full">
-            {/* Top row - 3 cards */}
-            <div className="flex justify-center">
-              <div className="grid grid-cols-3 gap-6 max-w-2xl w-full">
-                {cardsOnTable.slice(0, 3).map((item, index) => (
-                  <FrameComponent
-                    key={item.id}
-                    item={item}
-                    cardIndex={index}
-                    onClick={() => handleCardClick(item)}
-                  />
-                ))}
+          {stage === "wait_for_vote" && (
+            <div className="space-y-6 w-full">
+              {/* Top row - 3 cards */}
+              <div className="flex justify-center">
+                <div className="grid grid-cols-3 gap-6 max-w-2xl w-full">
+                  {cardsOnTable.map((item, index) => (
+                    <FrameComponent
+                      key={item.id}
+                      item={item}
+                      cardIndex={index + 3}
+                      onClick={() => handleCardClick(item)}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
-
-            {/* Bottom row - 2 cards */}
-            <div className="flex justify-center">
-              <div className="grid grid-cols-2 gap-6 max-w-md w-full">
-                {cardsOnTable.slice(3, 5).map((item, index) => (
-                  <FrameComponent
-                    key={item.id}
-                    item={item}
-                    cardIndex={index + 3}
-                    onClick={() => handleCardClick(item)}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Bottom section - 6 cards */}
