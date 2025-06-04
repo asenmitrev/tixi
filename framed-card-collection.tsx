@@ -176,7 +176,9 @@ export default function Game() {
   const [stage, setStage] = useState<string | null>(null);
   const [activeStory, setActiveStory] = useState<string | null>(null);
   useEffect(() => {
-    const sock = io("https://a202-46-232-158-37.ngrok-free.app");
+    const sock = io("http://89.117.50.164:3232", {
+      transports: ["polling", "websocket"],
+    });
     setSocket(sock);
     sock.on(
       "returnState",
