@@ -20,6 +20,142 @@ interface Card {
   playerRef: string;
 }
 
+const PlayerCard = ({
+  player,
+  isMe,
+  flippedPlayer,
+  loaded,
+  handlePlayerClick,
+  setFlippedPlayer,
+}: {
+  player: Player;
+  isMe: boolean;
+  flippedPlayer: string | null;
+  loaded: boolean;
+  handlePlayerClick: (playerName: string) => void;
+  setFlippedPlayer: (playerName: string | null) => void;
+}) => {
+  const isFlipped = flippedPlayer === player.name;
+  const ponts = useRef(player.points);
+  const [scoreAnimation, setScoreAnimation] = useState(false);
+  const [scoreAnimationPoints, setScoreAnimationPoints] = useState(0);
+
+  useEffect(() => {
+    if (ponts.current !== player.points) {
+      const pointsDifference = player.points - ponts.current;
+      setScoreAnimationPoints(pointsDifference);
+      ponts.current = player.points;
+      setScoreAnimation(true);
+
+      setTimeout(() => {
+        setScoreAnimation(false);
+      }, 3000);
+    }
+  }, [player.points]);
+
+  return (
+    <div
+      className={cn(
+        "flex flex-col items-center space-y-2 transition-all duration-300 cursor-pointer relative",
+        loaded ? "scale-100 opacity-100" : "scale-95 opacity-0"
+      )}
+      onClick={() => handlePlayerClick(player.name)}
+      onMouseEnter={() => setFlippedPlayer(player.name)}
+      onMouseLeave={() => setFlippedPlayer(null)}
+    >
+      {scoreAnimation && scoreAnimationPoints !== 0 && (
+        <div
+          className={cn(
+            "absolute -top-8 left-1/2 transform -translate-x-1/2 z-20",
+            "bg-amber-400 text-amber-900 px-2 py-1 rounded-full text-xs font-bold",
+            "animate-bounce shadow-lg border border-amber-600",
+            scoreAnimationPoints > 0
+              ? "text-green-800 bg-green-400"
+              : "text-red-800 bg-red-400"
+          )}
+        >
+          {scoreAnimationPoints > 0 ? "+" : ""}
+          {scoreAnimationPoints}
+        </div>
+      )}
+
+      <div
+        className={cn(
+          "relative w-16 h-16 rounded-full overflow-hidden border-4 transition-all duration-300",
+          "border-amber-600/70"
+        )}
+        style={{ perspective: "1000px" }}
+      >
+        <div
+          className={cn(
+            "relative w-full h-full transition-transform duration-700 transform-style-preserve-3d",
+            isFlipped ? "rotate-y-180" : ""
+          )}
+          style={{
+            transformStyle: "preserve-3d",
+            transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+          }}
+        >
+          {/* Front side - Avatar */}
+          <div
+            className="absolute inset-0 w-full h-full backface-hidden rounded-full overflow-hidden"
+            style={{ backfaceVisibility: "hidden" }}
+          >
+            <div
+              className={cn("absolute inset-0 rounded-full", "bg-gray-800/50")}
+            ></div>
+            <Image
+              src={"/avatar.jpg"}
+              alt={`${player.name}'s avatar`}
+              fill
+              className="object-cover"
+              sizes="64px"
+            />
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+              <User size={20} className="text-gray-400" />
+            </div>
+          </div>
+
+          {/* Back side - Score */}
+          <div
+            className={cn(
+              "absolute inset-0 w-full h-full backface-hidden rounded-full flex flex-col items-center justify-center text-center p-1",
+              player.storyTeller
+                ? "bg-gradient-to-br from-amber-800 to-amber-950"
+                : "bg-gradient-to-br from-gray-700 to-gray-900"
+            )}
+            style={{
+              backfaceVisibility: "hidden",
+              transform: "rotateY(180deg)",
+            }}
+          >
+            <div className="flex flex-col items-center justify-center h-full">
+              <div className="text-xs font-bold text-white">
+                {player.points?.toLocaleString() || 0}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full border-2 border-slate-900 animate-pulse z-10"></div>
+      </div>
+      <div className="text-center">
+        <p
+          className={cn(
+            "text-sm font-medium transition-colors duration-300",
+            isMe ? "text-amber-300" : "text-amber-100"
+          )}
+        >
+          {isMe ? "You" : player.name}{" "}
+        </p>
+        {player.storyTeller && (
+          <p className="text-xs text-amber-400/80">{"(Storyteller)"}</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default function Game() {
   const [loaded, setLoaded] = useState(false);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
@@ -145,101 +281,6 @@ export default function Game() {
     onSendStory(selectedCard.id, storyInput.trim());
     closeModal();
   };
-
-  const PlayerCard = ({ player, isMe }: { player: Player; isMe: boolean }) => {
-    const isFlipped = flippedPlayer === player.name;
-
-    return (
-      <div
-        className={cn(
-          "flex flex-col items-center space-y-2 transition-all duration-300 cursor-pointer",
-          loaded ? "scale-100 opacity-100" : "scale-95 opacity-0"
-        )}
-        onClick={() => handlePlayerClick(player.name)}
-        onMouseEnter={() => setFlippedPlayer(player.name)}
-        onMouseLeave={() => setFlippedPlayer(null)}
-      >
-        <div
-          className={cn(
-            "relative w-16 h-16 rounded-full overflow-hidden border-4 transition-all duration-300",
-
-            "border-amber-600/70"
-          )}
-          style={{ perspective: "1000px" }}
-        >
-          <div
-            className={cn(
-              "relative w-full h-full transition-transform duration-700 transform-style-preserve-3d",
-              isFlipped ? "rotate-y-180" : ""
-            )}
-            style={{
-              transformStyle: "preserve-3d",
-              transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
-            }}
-          >
-            {/* Front side - Avatar */}
-            <div
-              className="absolute inset-0 w-full h-full backface-hidden rounded-full overflow-hidden"
-              style={{ backfaceVisibility: "hidden" }}
-            >
-              <div
-                className={cn(
-                  "absolute inset-0 rounded-full",
-                  "bg-gray-800/50"
-                )}
-              ></div>
-              <Image
-                src={"/avatar.jpg"}
-                alt={`${player.name}'s avatar`}
-                fill
-                className="object-cover"
-                sizes="64px"
-              />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <User size={20} className="text-gray-400" />
-              </div>
-            </div>
-
-            {/* Back side - Score */}
-            <div
-              className={cn(
-                "absolute inset-0 w-full h-full backface-hidden rounded-full flex flex-col items-center justify-center text-center p-1",
-                player.storyTeller
-                  ? "bg-gradient-to-br from-amber-800 to-amber-950"
-                  : "bg-gradient-to-br from-gray-700 to-gray-900"
-              )}
-              style={{
-                backfaceVisibility: "hidden",
-                transform: "rotateY(180deg)",
-              }}
-            >
-              <div className="flex flex-col items-center justify-center h-full">
-                <div className="text-xs font-bold text-white">
-                  {player.points?.toLocaleString() || 0}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full border-2 border-slate-900 animate-pulse z-10"></div>
-        </div>
-        <div className="text-center">
-          <p
-            className={cn(
-              "text-sm font-medium transition-colors duration-300",
-              isMe ? "text-amber-300" : "text-amber-100"
-            )}
-          >
-            {isMe ? "You" : player.name}{" "}
-          </p>
-          {player.storyTeller && (
-            <p className="text-xs text-amber-400/80">{"(Storyteller)"}</p>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   const FrameComponent = ({
     item,
     cardIndex,
@@ -360,6 +401,10 @@ export default function Game() {
                     key={player.name}
                     player={player}
                     isMe={me?.name === player.name}
+                    flippedPlayer={flippedPlayer}
+                    loaded={loaded}
+                    handlePlayerClick={handlePlayerClick}
+                    setFlippedPlayer={setFlippedPlayer}
                   />
                 ))}
               </div>
