@@ -230,8 +230,11 @@ export default function Game() {
               isMe ? "text-amber-300" : "text-amber-100"
             )}
           >
-            {isMe ? "You" : player.name}
+            {isMe ? "You" : player.name}{" "}
           </p>
+          {player.storyTeller && (
+            <p className="text-xs text-amber-400/80">{"(Storyteller)"}</p>
+          )}
         </div>
       </div>
     );
@@ -251,7 +254,10 @@ export default function Game() {
         cardRefs.current[cardIndex] = el;
       }}
       className={cn(
-        "relative transition-all duration-300 transform cursor-pointer hover:scale-105 hover:-translate-y-2",
+        "relative transition-all duration-300 transform",
+        onClick
+          ? "cursor-pointer hover:scale-105 hover:-translate-y-2"
+          : "cursor-not-allowed opacity-50",
         loaded ? "scale-100 opacity-100" : "scale-95 opacity-0"
       )}
       onClick={onClick}
@@ -293,9 +299,13 @@ export default function Game() {
           return "Waiting for the storyteller";
         }
       case "pick_card":
-        return "Pick the card you think matches this story";
+        return amIStoryTeller
+          ? "Others are picking cards"
+          : "Pick the card you think matches the story";
       case "wait_for_vote":
-        return "Waiting for the votes. If you haven't voted, vote now!";
+        return amIStoryTeller
+          ? "The others are voting"
+          : "Waiting for the votes. If you haven't voted, vote now!";
     }
   }, [amIStoryTeller, stage]);
 
@@ -355,7 +365,7 @@ export default function Game() {
               </div>
             </div>
           </div>
-          {/* Middle section - 5 cards (3+2 layout) */}
+          {/* Middle section - cards on table */}
           {stage === "wait_for_vote" && (
             <div className="space-y-6 w-full">
               {/* Top row - 3 cards */}
@@ -366,7 +376,11 @@ export default function Game() {
                       key={item.id}
                       item={item}
                       cardIndex={index + 3}
-                      onClick={() => handleCardClick(item)}
+                      onClick={
+                        stage === "wait_for_vote"
+                          ? () => handleCardClick(item)
+                          : undefined
+                      }
                     />
                   ))}
                 </div>
@@ -386,7 +400,12 @@ export default function Game() {
                 key={item.id}
                 item={item}
                 cardIndex={index + 5}
-                onClick={() => handleCardClick(item)}
+                onClick={
+                  (stage === "pick_card" && !amIStoryTeller) ||
+                  (stage === "wait_for_story" && amIStoryTeller)
+                    ? () => handleCardClick(item)
+                    : undefined
+                }
               />
             ))}
           </div>
@@ -451,7 +470,7 @@ export default function Game() {
             </div>
 
             {/* Story input section for storytellers */}
-            {amIStoryTeller && (
+            {amIStoryTeller && stage === "wait_for_story" && (
               <div className="mt-6 p-4 bg-gradient-to-br from-amber-900/40 to-amber-950/40 backdrop-blur-sm rounded-lg border border-amber-700/50">
                 <form onSubmit={handleStorySubmit} className="space-y-4">
                   <div>
@@ -479,6 +498,46 @@ export default function Game() {
                     Pick
                   </button>
                 </form>
+              </div>
+            )}
+
+            {/* Pick card section for non-storytellers during pick_card stage */}
+            {!amIStoryTeller && stage === "pick_card" && (
+              <div className="mt-6 p-4 bg-gradient-to-br from-amber-900/40 to-amber-950/40 backdrop-blur-sm rounded-lg border border-amber-700/50">
+                <div className="space-y-4">
+                  <p className="text-amber-300 font-serif text-sm text-center">
+                    Do you want to pick this card for the story?
+                  </p>
+                  <button
+                    onClick={() => {
+                      onSendPickCard(selectedCard.id);
+                      closeModal();
+                    }}
+                    className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-serif px-6 py-3 rounded-md transition-all duration-200 shadow-lg"
+                  >
+                    Pick This Card
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Vote section for wait_for_vote stage */}
+            {stage === "wait_for_vote" && !amIStoryTeller && (
+              <div className="mt-6 p-4 bg-gradient-to-br from-amber-900/40 to-amber-950/40 backdrop-blur-sm rounded-lg border border-amber-700/50">
+                <div className="space-y-4">
+                  <p className="text-amber-300 font-serif text-sm text-center">
+                    Do you think this card matches the story?
+                  </p>
+                  <button
+                    onClick={() => {
+                      onSendVote(selectedCard.id);
+                      closeModal();
+                    }}
+                    className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-serif px-6 py-3 rounded-md transition-all duration-200 shadow-lg"
+                  >
+                    Vote for This Card
+                  </button>
+                </div>
               </div>
             )}
           </div>
