@@ -466,7 +466,7 @@ export default function Game() {
           onClick={closeModal}
         >
           <div
-            className="relative w-96 max-w-2xl mx-auto animate-in zoom-in-95 duration-500"
+            className="relative w-48 max-w-2xl mx-auto animate-in zoom-in-95 duration-500"
             style={{
               transformOrigin: `${animationOrigin.x}px ${animationOrigin.y}px`,
             }}
