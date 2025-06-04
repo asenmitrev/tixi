@@ -176,7 +176,7 @@ export default function Game() {
   const [stage, setStage] = useState<string | null>(null);
   const [activeStory, setActiveStory] = useState<string | null>(null);
   useEffect(() => {
-    const sock = io("http://localhost:3000");
+    const sock = io("https://a202-46-232-158-37.ngrok-free.app");
     setSocket(sock);
     sock.on(
       "returnState",
@@ -415,7 +415,7 @@ export default function Game() {
             <div className="space-y-6 w-full">
               {/* Top row - 3 cards */}
               <div className="flex justify-center">
-                <div className="grid grid-cols-3 gap-6 max-w-2xl w-full">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 max-w-2xl w-full">
                   {cardsOnTable.map((item, index) => (
                     <FrameComponent
                       key={item.id}
@@ -439,7 +439,7 @@ export default function Game() {
           <h2 className="text-left text-amber-300 font-serif text-xl">
             Your Cards
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 gap-8 max-h-10">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 gap-8 ">
             {myCards.map((item, index) => (
               <FrameComponent
                 key={item.id}
