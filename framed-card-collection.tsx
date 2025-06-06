@@ -180,6 +180,16 @@ export default function Game() {
       transports: ["polling", "websocket"],
     });
     setSocket(sock);
+
+    // Extract URL parameters and join room
+    const params = new URLSearchParams(window.location.search);
+    const nameParam = params.get("name");
+    const roomIdParam = params.get("roomId");
+
+    if (nameParam && roomIdParam) {
+      sock.emit("joinRoom", { roomId: roomIdParam, id: nameParam });
+    }
+
     sock.on(
       "returnState",
       (
