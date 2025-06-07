@@ -204,7 +204,6 @@ export default function Game() {
               me: Player;
             }
       ) => {
-        console.log(state);
         if ("message" in state) {
           setRoomInfo((prev) => (_.isEqual(prev, state) ? prev : state));
         } else {
