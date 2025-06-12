@@ -200,7 +200,7 @@ export default function Game() {
               stage: string;
               activeStory: string;
               myCards: Card[];
-              players: Player[];
+              w;
               me: Player;
             }
       ) => {
