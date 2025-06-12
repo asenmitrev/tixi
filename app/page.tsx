@@ -12,14 +12,18 @@ export default function RoomsPage() {
   const router = useRouter();
   const [joinRoomId, setJoinRoomId] = useState("");
   const [playerName, setPlayerName] = useState("");
+  const [numberOfPlayers, setNumberOfPlayers] = useState("");
   const joinRoom = () => {
-    if (!joinRoomId.trim() || !playerName.trim()) return;
+    if (!joinRoomId.trim() || !playerName.trim() || !numberOfPlayers.trim())
+      return;
 
     // Redirect to the room with URL parameters
     router.push(
       `/rooms/${joinRoomId}?name=${encodeURIComponent(
         playerName
-      )}&roomId=${encodeURIComponent(joinRoomId)}`
+      )}&roomId=${encodeURIComponent(
+        joinRoomId
+      )}&numberOfPlayers=${encodeURIComponent(numberOfPlayers)}`
     );
   };
 
@@ -69,10 +73,29 @@ export default function RoomsPage() {
                   className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500"
                 />
               </div>
+              <div>
+                <Label htmlFor="numberOfPlayers" className="text-slate-300">
+                  Number of Players
+                </Label>
+                <Input
+                  id="numberOfPlayers"
+                  value={numberOfPlayers}
+                  onChange={(e) => setNumberOfPlayers(e.target.value)}
+                  placeholder="Enter number of players..."
+                  type="number"
+                  min="2"
+                  max="8"
+                  className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500"
+                />
+              </div>
               <Button
                 onClick={joinRoom}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-                disabled={!joinRoomId.trim() || !playerName.trim()}
+                disabled={
+                  !joinRoomId.trim() ||
+                  !playerName.trim() ||
+                  !numberOfPlayers.trim()
+                }
               >
                 Join Room
               </Button>

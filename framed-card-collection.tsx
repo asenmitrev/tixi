@@ -187,7 +187,11 @@ export default function Game() {
     const roomIdParam = params.get("roomId");
 
     if (nameParam && roomIdParam) {
-      sock.emit("joinRoom", { roomId: roomIdParam, id: nameParam });
+      sock.emit("joinRoom", {
+        roomId: roomIdParam,
+        id: nameParam,
+        numberOfPlayers: params.get("numberOfPlayers"),
+      });
     }
 
     sock.on(
@@ -200,7 +204,7 @@ export default function Game() {
               stage: string;
               activeStory: string;
               myCards: Card[];
-              w;
+              players: Player[];
               me: Player;
             }
       ) => {
