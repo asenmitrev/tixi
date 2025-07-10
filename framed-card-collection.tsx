@@ -405,56 +405,56 @@ export default function Game() {
         </div>
         <div className="flex flex-row space-x-4">
           {/* Players Row */}
-          <div className="space-y-4">
+          <div className=" w-full">
             <h2 className="text-center text-amber-300 font-serif text-xl">
               Players
             </h2>
-            <div className="flex justify-center ">
-              <div className="flex flex-col space-y-8 align-items-center justify-center">
-                {players.map((player) => (
-                  <PlayerCard
-                    key={player.name}
-                    player={player}
-                    isMe={me?.name === player.name}
-                    flippedPlayer={flippedPlayer}
-                    loaded={loaded}
-                    handlePlayerClick={handlePlayerClick}
-                    setFlippedPlayer={setFlippedPlayer}
-                  />
-                ))}
-              </div>
+            <div className="flex flex-wrap justify-center gap-8">
+              {players.map((player) => (
+                <PlayerCard
+                  key={player.name}
+                  player={player}
+                  isMe={me?.name === player.name}
+                  flippedPlayer={flippedPlayer}
+                  loaded={loaded}
+                  handlePlayerClick={handlePlayerClick}
+                  setFlippedPlayer={setFlippedPlayer}
+                />
+              ))}
             </div>
           </div>
-          {/* Middle section - cards on table */}
-          {stage === "wait_for_vote" && (
-            <div className="space-y-6 w-full">
-              {/* Top row - 3 cards */}
-              <div className="flex justify-center">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 max-w-2xl w-full">
-                  {cardsOnTable.map((item, index) => (
-                    <FrameComponent
-                      key={item.id}
-                      item={item}
-                      cardIndex={index + 3}
-                      onClick={
-                        stage === "wait_for_vote"
-                          ? () => handleCardClick(item)
-                          : undefined
-                      }
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Bottom section - 6 cards */}
-        <div className="space-y-6 ">
+        {/* Center section - cards on table */}
+        {stage === "wait_for_vote" && (
+          <div className="space-y-6 w-full">
+            {/* Cards container with inner frame */}
+            <h1 className="text-center text-amber-300 font-serif text-xl">
+              Cards on the table
+            </h1>
+            <div className="grid grid-cols-2 w-full sm:grid-cols-3 lg:grid-cols-5 gap-6 ">
+              {cardsOnTable.map((item, index) => (
+                <FrameComponent
+                  key={item.id}
+                  item={item}
+                  cardIndex={index + 3}
+                  onClick={
+                    stage === "wait_for_vote"
+                      ? () => handleCardClick(item)
+                      : undefined
+                  }
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Bottom section - Your Cards */}
+        <div className="space-y-6">
           <h2 className="text-left text-amber-300 font-serif text-xl">
             Your Cards
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 gap-8 ">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 gap-8">
             {myCards.map((item, index) => (
               <FrameComponent
                 key={item.id}
