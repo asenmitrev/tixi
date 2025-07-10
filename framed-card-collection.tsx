@@ -155,7 +155,24 @@ const PlayerCard = ({
     </div>
   );
 };
+const getOrCreatePlayerId = (): string => {
+  const STORAGE_KEY = "tixi_player_id";
+  let playerId = localStorage.getItem(STORAGE_KEY);
 
+  if (!playerId) {
+    // Generate a unique ID
+    if (crypto.randomUUID) {
+      playerId = crypto.randomUUID();
+    } else {
+      // Fallback for older browsers
+      playerId =
+        "player_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+    }
+    localStorage.setItem(STORAGE_KEY, playerId);
+  }
+
+  return playerId;
+};
 export default function Game() {
   const [loaded, setLoaded] = useState(false);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
@@ -175,6 +192,9 @@ export default function Game() {
   const [storyInput, setStoryInput] = useState("");
   const [stage, setStage] = useState<string | null>(null);
   const [activeStory, setActiveStory] = useState<string | null>(null);
+
+  // Function to get or generate unique player ID
+
   useEffect(() => {
     const sock = io("https://dev.writecraft.io", {
       transports: ["polling", "websocket"],
@@ -183,13 +203,15 @@ export default function Game() {
 
     // Extract URL parameters and join room
     const params = new URLSearchParams(window.location.search);
-    const nameParam = params.get("name");
     const roomIdParam = params.get("roomId");
 
-    if (nameParam && roomIdParam) {
+    // Get unique player ID from localStorage
+    const playerId = getOrCreatePlayerId();
+
+    if (roomIdParam) {
       sock.emit("joinRoom", {
         roomId: roomIdParam,
-        id: nameParam,
+        id: playerId,
         numberOfPlayers: params.get("numberOfPlayers"),
       });
     }
@@ -245,6 +267,18 @@ export default function Game() {
       }
     ); // Return State
   }, []);
+
+  useEffect(() => {
+    if (socket) {
+      const params = new URLSearchParams(window.location.search);
+
+      const nameParam = params.get("name");
+      socket?.emit("move", {
+        type: "naming",
+        name: nameParam,
+      });
+    }
+  }, [socket]);
 
   const amIStoryTeller = me?.storyTeller || false;
 
