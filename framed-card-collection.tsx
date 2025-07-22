@@ -198,6 +198,8 @@ export default function Game() {
   );
   const [chatInput, setChatInput] = useState("");
   const chatBottomRef = useRef<HTMLDivElement | null>(null);
+  // Track which card the player picked this turn
+  const [pickedCardId, setPickedCardId] = useState<string | null>(null);
 
   // Function to get or generate unique player ID
 
@@ -320,6 +322,7 @@ export default function Game() {
       type: "pickCard",
       cardId: cardId,
     });
+    setPickedCardId(cardId); // Mark the picked card
   };
 
   // Send chat message
@@ -361,10 +364,12 @@ export default function Game() {
     item,
     cardIndex,
     onClick,
+    isPicked,
   }: {
     item: Card;
     cardIndex: number;
     onClick?: () => void;
+    isPicked?: boolean;
   }) => (
     <div
       ref={(el) => {
@@ -381,16 +386,17 @@ export default function Game() {
     >
       {/* Outer decorative frame */}
       <div className="absolute inset-0 -m-2 border-4 border-amber-700/80 rounded-lg shadow-[0_0_10px_rgba(0,0,0,0.5)] bg-gradient-to-br from-amber-800/30 to-amber-950/30 backdrop-blur-sm"></div>
-
+      {/* Picked card overlay */}
+      {isPicked && (
+        <div className="absolute inset-0 z-20 border-4 border-green-400 rounded-lg pointer-events-none animate-pulse"></div>
+      )}
       {/* Inner decorative elements - corners */}
       <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-amber-500"></div>
       <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-amber-500"></div>
       <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-amber-500"></div>
       <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-amber-500"></div>
-
       {/* Gold accent lines */}
       <div className="absolute inset-0 -m-1 border border-amber-400/50 rounded-md"></div>
-
       <Card className="overflow-hidden border-0 rounded-sm shadow-xl bg-black">
         {/* Image container */}
         <div className="relative w-full aspect-[2/3] overflow-hidden">
@@ -527,6 +533,7 @@ export default function Game() {
                     ? () => handleCardClick(item)
                     : undefined
                 }
+                isPicked={pickedCardId === item.id}
               />
             ))}
           </div>
