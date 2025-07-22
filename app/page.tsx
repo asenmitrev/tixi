@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -31,6 +31,10 @@ export default function RoomsPage() {
   const [activeRooms, setActiveRooms] = useState<ActiveRoom[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pendingJoinRoomId, setPendingJoinRoomId] = useState<string | null>(
+    null
+  );
+  const playerNameInputRef = useRef<HTMLInputElement>(null);
 
   const fetchActiveRooms = async () => {
     try {
@@ -75,8 +79,8 @@ export default function RoomsPage() {
 
   const joinActiveRoom = (roomId: string) => {
     if (!playerName.trim()) {
-      // Focus on the player name input if it's empty
-      document.getElementById("playerName")?.focus();
+      setPendingJoinRoomId(roomId);
+      playerNameInputRef.current?.focus();
       return;
     }
 
@@ -93,6 +97,15 @@ export default function RoomsPage() {
     );
   };
 
+  // Watch for playerName being filled after a pending join
+  useEffect(() => {
+    if (pendingJoinRoomId && playerName.trim()) {
+      joinActiveRoom(pendingJoinRoomId);
+      setPendingJoinRoomId(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playerName]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 p-6">
       <div className="max-w-6xl mx-auto">
@@ -105,6 +118,25 @@ export default function RoomsPage() {
             Create or join a room to begin your storytelling adventure
           </p>
         </div>
+
+        {/* Player Name Card */}
+        <Card className="mb-8 py-4 bg-slate-800/50 border-2 border-yellow-400/30 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-yellow-400 flex items-center gap-2">
+              Your Name
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Input
+              id="playerName"
+              ref={playerNameInputRef}
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              placeholder="Enter your name..."
+              className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-yellow-500"
+            />
+          </CardContent>
+        </Card>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Active Rooms Section */}
@@ -197,33 +229,21 @@ export default function RoomsPage() {
 
               {!playerName.trim() && activeRooms.length > 0 && !loading && (
                 <p className="text-amber-400 text-sm text-center">
-                  Enter your name below to join active rooms
+                  Enter your name to join active rooms
                 </p>
               )}
             </CardContent>
           </Card>
 
-          {/* Join Room Section */}
+          {/* Create Room Section */}
           <Card className="bg-slate-800/50 border-2 py-8 border-blue-600/30 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-blue-400 flex items-center gap-2">
                 <Users className="w-5 h-5" />
-                Join Room
+                Create Room
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="playerName" className="text-slate-300">
-                  Your Name
-                </Label>
-                <Input
-                  id="playerName"
-                  value={playerName}
-                  onChange={(e) => setPlayerName(e.target.value)}
-                  placeholder="Enter your name..."
-                  className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500"
-                />
-              </div>
               <div>
                 <Label htmlFor="joinRoomId" className="text-slate-300">
                   Room ID
@@ -260,7 +280,7 @@ export default function RoomsPage() {
                   !numberOfPlayers.trim()
                 }
               >
-                Join Room
+                Create Room
               </Button>
             </CardContent>
           </Card>
