@@ -192,38 +192,44 @@ export default function RoomsPage() {
 
               {!loading && !error && activeRooms.length > 0 && (
                 <div className="space-y-3 max-h-96 overflow-y-auto">
-                  {activeRooms.map((room) => (
-                    <div
-                      key={room.roomId}
-                      className="bg-slate-700/50 border border-slate-600 rounded-lg p-4 flex items-center justify-between hover:bg-slate-700/70 transition-colors"
-                    >
-                      <div>
-                        <h3 className="text-white font-medium">
-                          Room {room.roomId}
-                        </h3>
-                        <p className="text-slate-300 text-sm">
-                          Game ID: {room.roomData?.id}
-                        </p>
-                        <p className="text-slate-400 text-xs">
-                          {room.players?.length || 0}/
-                          {room.roomData?.numberOfPlayers || "?"} players
-                        </p>
-                        {room.players && room.players.length > 0 && (
-                          <p className="text-slate-500 text-xs mt-1">
-                            Players: {room.players.map((p) => p.ref).join(", ")}
-                          </p>
-                        )}
-                      </div>
-                      <Button
-                        onClick={() => joinActiveRoom(room.roomId)}
-                        size="sm"
-                        className="bg-green-600 hover:bg-green-700 text-white"
-                        disabled={!playerName.trim()}
+                  {activeRooms.map((room) => {
+                    const isRoomFull =
+                      (room.players?.length || 0) >=
+                      Number(room.roomData?.numberOfPlayers || 2);
+                    return (
+                      <div
+                        key={room.roomId}
+                        className="bg-slate-700/50 border border-slate-600 rounded-lg p-4 flex items-center justify-between hover:bg-slate-700/70 transition-colors"
                       >
-                        Join
-                      </Button>
-                    </div>
-                  ))}
+                        <div>
+                          <h3 className="text-white font-medium">
+                            Room {room.roomId}
+                          </h3>
+                          <p className="text-slate-300 text-sm">
+                            Game ID: {room.roomData?.id}
+                          </p>
+                          <p className="text-slate-400 text-xs">
+                            {room.players?.length || 0}/
+                            {room.roomData?.numberOfPlayers || "?"} players
+                          </p>
+                          {room.players && room.players.length > 0 && (
+                            <p className="text-slate-500 text-xs mt-1">
+                              Players:{" "}
+                              {room.players.map((p) => p.ref).join(", ")}
+                            </p>
+                          )}
+                        </div>
+                        <Button
+                          onClick={() => joinActiveRoom(room.roomId)}
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                          disabled={!playerName.trim() || isRoomFull}
+                        >
+                          {isRoomFull ? "Full" : "Join"}
+                        </Button>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 
