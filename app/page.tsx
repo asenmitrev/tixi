@@ -15,7 +15,7 @@ interface ActiveRoom {
     ref: string;
     hello?: string;
   }>;
-  disconnected: any[];
+  disconnected: unknown[];
   roomData: {
     roomId: string;
     id: string;

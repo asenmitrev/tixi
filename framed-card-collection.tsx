@@ -192,6 +192,12 @@ export default function Game() {
   const [storyInput, setStoryInput] = useState("");
   const [stage, setStage] = useState<string | null>(null);
   const [activeStory, setActiveStory] = useState<string | null>(null);
+  // Chat state
+  const [messages, setMessages] = useState<{ name: string; message: string }[]>(
+    []
+  );
+  const [chatInput, setChatInput] = useState("");
+  const chatBottomRef = useRef<HTMLDivElement | null>(null);
 
   // Function to get or generate unique player ID
 
@@ -228,6 +234,7 @@ export default function Game() {
               myCards: Card[];
               players: Player[];
               me: Player;
+              messages?: { name: string; message: string }[];
             }
       ) => {
         if ("message" in state) {
@@ -264,9 +271,19 @@ export default function Game() {
         if ("me" in state) {
           setMe((prev) => (_.isEqual(prev, state.me) ? prev : state.me));
         }
+        if ("messages" in state && Array.isArray(state.messages)) {
+          setMessages(state.messages);
+        }
       }
     ); // Return State
   }, []);
+
+  // Scroll chat to bottom when messages change
+  useEffect(() => {
+    if (chatBottomRef.current) {
+      chatBottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   useEffect(() => {
     if (socket) {
@@ -303,6 +320,16 @@ export default function Game() {
       type: "pickCard",
       cardId: cardId,
     });
+  };
+
+  // Send chat message
+  const sendChatMessage = () => {
+    if (!chatInput.trim() || !socket) return;
+    socket.emit("move", {
+      type: "message",
+      message: chatInput.trim(),
+    });
+    setChatInput("");
   };
 
   useEffect(() => {
@@ -637,6 +664,50 @@ export default function Game() {
           </div>
         </div>
       )}
+      {/* Chat Floating Panel */}
+      <div className="fixed bottom-4 right-4 w-80 max-w-full z-50">
+        <div className="bg-gradient-to-br from-amber-900/80 to-amber-950/90 border border-amber-700/70 rounded-lg shadow-2xl flex flex-col h-96">
+          <div className="px-4 py-2 border-b border-amber-700/50 text-amber-200 font-serif text-lg rounded-t-lg bg-amber-900/60">
+            Chat
+          </div>
+          <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 text-amber-100 text-sm font-mono">
+            {messages.length === 0 && (
+              <div className="text-amber-400/60 italic">No messages yet.</div>
+            )}
+            {messages.map((msg, idx) => (
+              <div key={idx} className="break-words">
+                <span className="font-bold text-amber-300">{msg.name}:</span>{" "}
+                {msg.message}
+              </div>
+            ))}
+            <div ref={chatBottomRef} />
+          </div>
+          <form
+            className="p-2 border-t border-amber-700/50 bg-amber-900/40 flex gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              sendChatMessage();
+            }}
+          >
+            <input
+              type="text"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              placeholder="Type a message..."
+              className="flex-1 px-3 py-2 rounded bg-slate-800/80 text-amber-100 placeholder-amber-400/50 border border-amber-700/40 focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+              maxLength={200}
+              autoComplete="off"
+            />
+            <button
+              type="submit"
+              disabled={!chatInput.trim()}
+              className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded font-bold disabled:bg-amber-900/40 disabled:text-amber-300/40 disabled:cursor-not-allowed"
+            >
+              Send
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
