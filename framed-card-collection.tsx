@@ -278,6 +278,10 @@ export default function Game() {
         }
       }
     ); // Return State
+
+    return () => {
+      sock.disconnect();
+    };
   }, []);
 
   // Scroll chat to bottom when messages change
