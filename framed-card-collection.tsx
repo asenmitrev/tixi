@@ -205,7 +205,7 @@ export default function Game() {
 
   useEffect(() => {
     const sock = io("https://dev.writecraft.io", {
-      transports: ["polling", "websocket"],
+      transports: ["polling"],
     });
     setSocket(sock);
 
