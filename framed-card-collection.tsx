@@ -222,10 +222,11 @@ export default function Game() {
     setSocket(sock);
 
     const pongInterval = setInterval(() => {
-      if (lastPongRef.current && Date.now() - lastPongRef.current > 5000) {
+      if (lastPongRef.current && Date.now() - lastPongRef.current > 10000) {
         console.log("pong timeout");
         sock.disconnect();
         sock.connect();
+        lastPongRef.current = Date.now();
       }
     }, 1000);
 
