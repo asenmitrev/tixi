@@ -216,10 +216,12 @@ export default function Game() {
     const playerId = getOrCreatePlayerId();
 
     if (roomIdParam) {
+      const nameParam = params.get("name");
       sock.emit("joinRoom", {
         roomId: roomIdParam,
         id: playerId,
         numberOfPlayers: params.get("numberOfPlayers"),
+        name: nameParam,
       });
     }
 
@@ -260,7 +262,6 @@ export default function Game() {
         }
         if ("myCards" in state) {
           setMyCards((prev) => {
-            console.log(_.isEqual(prev, state.myCards));
             return _.isEqual(prev, state.myCards) ? prev : state.myCards;
           });
         }
@@ -295,6 +296,7 @@ export default function Game() {
       const params = new URLSearchParams(window.location.search);
 
       const nameParam = params.get("name");
+      console.log(nameParam, ' here?')
       socket?.emit("move", {
         type: "naming",
         name: nameParam,
