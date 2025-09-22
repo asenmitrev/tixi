@@ -227,6 +227,14 @@ export default function Game() {
         sock.disconnect();
         sock.connect();
         lastPongRef.current = Date.now();
+        const nameParam = params.get("name");
+        console.log(nameParam, " here? Joining room");
+        sock.emit("joinRoom", {
+          roomId: roomIdParam,
+          id: playerId,
+          numberOfPlayers: params.get("numberOfPlayers"),
+          name: nameParam,
+        });
       }
     }, 1000);
 
