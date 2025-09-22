@@ -222,13 +222,14 @@ export default function Game() {
     setSocket(sock);
 
     const pongInterval = setInterval(() => {
-      if (lastPongRef.current && Date.now() - lastPongRef.current > 10000) {
+      if (lastPongRef.current && Date.now() - lastPongRef.current > 5000) {
         console.log("pong timeout");
         sock.disconnect();
         sock.connect();
         lastPongRef.current = Date.now();
         const nameParam = params.get("name");
         console.log(nameParam, " here? Joining room");
+
         sock.emit("joinRoom", {
           roomId: roomIdParam,
           id: playerId,
@@ -271,6 +272,7 @@ export default function Game() {
               messages?: { name: string; message: string }[];
             }
       ) => {
+        lastPongRef.current = Date.now();
         if ("message" in state) {
           setRoomInfo((prev) => (_.isEqual(prev, state) ? prev : state));
         } else {
