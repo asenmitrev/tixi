@@ -217,6 +217,7 @@ export default function Game() {
 
     if (roomIdParam) {
       const nameParam = params.get("name");
+      console.log(nameParam, " here? Joining room");
       sock.emit("joinRoom", {
         roomId: roomIdParam,
         id: playerId,
@@ -280,7 +281,8 @@ export default function Game() {
     ); // Return State
 
     return () => {
-      // sock.disconnect();
+      console.log("disconnecting");
+      sock.disconnect();
     };
   }, []);
 
@@ -296,7 +298,7 @@ export default function Game() {
       const params = new URLSearchParams(window.location.search);
 
       const nameParam = params.get("name");
-      console.log(nameParam, ' here?')
+      console.log(nameParam, " here?");
       socket?.emit("move", {
         type: "naming",
         name: nameParam,
