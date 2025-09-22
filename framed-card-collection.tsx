@@ -202,7 +202,6 @@ export default function Game() {
   const [pickedCardId, setPickedCardId] = useState<string | null>(null);
 
   // Function to get or generate unique player ID
-
   useEffect(() => {
     const sock = io("https://dev.writecraft.io", {
       transports: ["polling"],
@@ -280,7 +279,7 @@ export default function Game() {
     ); // Return State
 
     return () => {
-      sock.disconnect();
+      // sock.disconnect();
     };
   }, []);
 
