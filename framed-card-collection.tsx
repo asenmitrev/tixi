@@ -200,13 +200,34 @@ export default function Game() {
   const chatBottomRef = useRef<HTMLDivElement | null>(null);
   // Track which card the player picked this turn
   const [pickedCardId, setPickedCardId] = useState<string | null>(null);
+  const lastPongRef = useRef<number>(0);
 
   // Function to get or generate unique player ID
   useEffect(() => {
     const sock = io("https://dev.writecraft.io", {
       transports: ["polling"],
     });
+    sock.on("connect", () => {
+      console.log("connected");
+    });
+
+    sock.on("disconnect", () => {
+      console.log("disconnected");
+    });
+
+    sock.on("pong", () => {
+      console.log("pong");
+      lastPongRef.current = Date.now();
+    });
     setSocket(sock);
+
+    const pongInterval = setInterval(() => {
+      if (Date.now() - lastPongRef.current > 5000) {
+        console.log("pong timeout");
+        sock.disconnect();
+        sock.connect();
+      }
+    }, 1000);
 
     // Extract URL parameters and join room
     const params = new URLSearchParams(window.location.search);
@@ -225,10 +246,6 @@ export default function Game() {
         name: nameParam,
       });
     }
-
-    sock.on("disconnect", () => {
-      console.log("disconnected");
-    });
 
     sock.on(
       "returnState",
@@ -291,6 +308,7 @@ export default function Game() {
 
     return () => {
       console.log("disconnecting");
+      clearInterval(pongInterval);
       sock.disconnect();
     };
   }, []);
