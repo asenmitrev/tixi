@@ -226,6 +226,10 @@ export default function Game() {
       });
     }
 
+    sock.on("disconnect", () => {
+      console.log("disconnected");
+    });
+
     sock.on(
       "returnState",
       (
@@ -275,7 +279,12 @@ export default function Game() {
           setMe((prev) => (_.isEqual(prev, state.me) ? prev : state.me));
         }
         if ("messages" in state && Array.isArray(state.messages)) {
-          setMessages(state.messages);
+          setMessages(
+            (past) =>
+              (past.length < (state.messages?.length || 0)
+                ? state.messages
+                : past) ?? []
+          );
         }
       }
     ); // Return State
