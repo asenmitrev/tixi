@@ -204,7 +204,7 @@ export default function Game() {
 
   // Function to get or generate unique player ID
   useEffect(() => {
-    const sock = io("https://dev.writecraft.io", {
+    const sock = io("http://68.183.220.0:3232/", {
       transports: ["polling"],
     });
     sock.on("connect", () => {

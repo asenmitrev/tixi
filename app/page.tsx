@@ -40,7 +40,7 @@ export default function RoomsPage() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch("https://dev.writecraft.io/games");
+      const response = await fetch("http://68.183.220.0:3232/games");
 
       if (!response.ok) {
         throw new Error(`Failed to fetch rooms: ${response.status}`);
