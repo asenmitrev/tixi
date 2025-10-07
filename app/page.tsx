@@ -112,7 +112,7 @@ export default function RoomsPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-yellow-400 mb-2">
-            Стаи със истории
+            Лоби
           </h1>
           <p className="text-slate-300 text-lg">
             Създай стая или се включи в такава и започни играта!
@@ -246,13 +246,13 @@ export default function RoomsPage() {
             <CardHeader>
               <CardTitle className="text-blue-400 flex items-center gap-2">
                 <Users className="w-5 h-5" />
-                Create Room
+                Създай стая
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <Label htmlFor="joinRoomId" className="text-slate-300">
-                  Room ID
+                  Номер на стая
                 </Label>
                 <Input
                   id="joinRoomId"
