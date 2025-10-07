@@ -462,18 +462,18 @@ export default function Game() {
     switch (stage) {
       case "wait_for_story":
         if (amIStoryTeller) {
-          return "Your turn to tell a story";
+          return "Твой ред е да кажеш история!";
         } else {
-          return "Waiting for the storyteller";
+          return "Изчакай разказвачът да даде история";
         }
       case "pick_card":
         return amIStoryTeller
-          ? "Others are picking cards"
-          : "Pick the card you think matches the story";
+          ? "Изчакай другите да изберат карта"
+          : "Избери карта, която отговаря на историята";
       case "wait_for_vote":
         return amIStoryTeller
-          ? "The others are voting"
-          : "Waiting for the votes. If you haven't voted, vote now!";
+          ? "Изчакай другите да гласуват"
+          : "Гласувай сега!";
     }
   }, [amIStoryTeller, stage]);
 
@@ -519,7 +519,7 @@ export default function Game() {
           {/* Players Row */}
           <div className=" w-full">
             <h2 className="text-center text-amber-300 font-serif text-xl">
-              Players
+              Играчи
             </h2>
             <div className="flex flex-wrap justify-center gap-8">
               {players.map((player) => (
@@ -564,7 +564,7 @@ export default function Game() {
         {/* Bottom section - Your Cards */}
         <div className="space-y-6">
           <h2 className="text-left text-amber-300 font-serif text-xl">
-            Your Cards
+            Твоите карти
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 gap-8">
             {myCards.map((item, index) => (
@@ -657,7 +657,7 @@ export default function Game() {
                       id="story-input"
                       value={storyInput}
                       onChange={(e) => setStoryInput(e.target.value)}
-                      placeholder="Tell your story..."
+                      placeholder="Разкажи история..."
                       required
                       className="w-full px-3 py-2 bg-slate-800/70 border border-amber-600/50 rounded-md text-amber-100 placeholder-amber-400/50 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 resize-none"
                       rows={3}
@@ -745,7 +745,7 @@ export default function Game() {
               type="text"
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
-              placeholder="Type a message..."
+              placeholder="Напиши съобщение..."
               className="flex-1 px-3 py-2 rounded bg-slate-800/80 text-amber-100 placeholder-amber-400/50 border border-amber-700/40 focus:outline-none focus:ring-amber-500 focus:border-amber-500"
               maxLength={200}
               autoComplete="off"

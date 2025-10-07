@@ -43,7 +43,7 @@ export default function RoomsPage() {
       const response = await fetch("https://starfish-app-sdpej.ondigitalocean.app/games");
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch rooms: ${response.status}`);
+        throw new Error(`Греешка със зареждането на активни стаи: ${response.status}`);
       }
 
       const data = await response.json();
@@ -51,9 +51,9 @@ export default function RoomsPage() {
       setActiveRooms(data.rooms || []);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to fetch active rooms"
+        err instanceof Error ? err.message : "Не успя да заредиш активни стаи"
       );
-      console.error("Error fetching active rooms:", err);
+      console.error("Има грешка със зареждането на активни стаи:", err);
     } finally {
       setLoading(false);
     }
@@ -112,10 +112,10 @@ export default function RoomsPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-yellow-400 mb-2">
-            Storytelling Rooms
+            Стаи със истории
           </h1>
           <p className="text-slate-300 text-lg">
-            Create or join a room to begin your storytelling adventure
+            Създай стая или се включи в такава и започни играта!
           </p>
         </div>
 
@@ -123,7 +123,7 @@ export default function RoomsPage() {
         <Card className="mb-8 py-4 bg-slate-800/50 border-2 border-yellow-400/30 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-yellow-400 flex items-center gap-2">
-              Your Name
+              Твоето име
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -132,7 +132,7 @@ export default function RoomsPage() {
               ref={playerNameInputRef}
               value={playerName}
               onChange={(e) => setPlayerName(e.target.value)}
-              placeholder="Enter your name..."
+              placeholder="Въведи име..."
               className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-yellow-500"
             />
           </CardContent>
@@ -144,7 +144,7 @@ export default function RoomsPage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-green-400 flex items-center gap-2">
                 <Play className="w-5 h-5" />
-                Active Rooms
+                Активни стаи
               </CardTitle>
               <Button
                 onClick={fetchActiveRooms}
@@ -162,13 +162,13 @@ export default function RoomsPage() {
               {loading && (
                 <div className="text-center py-8">
                   <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
-                  <p className="text-slate-300 mt-2">Loading active rooms...</p>
+                  <p className="text-slate-300 mt-2">Зарежда активни стаи...</p>
                 </div>
               )}
 
               {error && (
                 <div className="text-center py-8">
-                  <p className="text-red-400 mb-2">Error loading rooms</p>
+                  <p className="text-red-400 mb-2">Грешка със зареждането на стаи</p>
                   <p className="text-slate-400 text-sm">{error}</p>
                   <Button
                     onClick={fetchActiveRooms}
@@ -183,9 +183,9 @@ export default function RoomsPage() {
 
               {!loading && !error && activeRooms.length === 0 && (
                 <div className="text-center py-8">
-                  <p className="text-slate-400">No active rooms found</p>
+                  <p className="text-slate-400">Няма активни стаи</p>
                   <p className="text-slate-500 text-sm mt-1">
-                    Create a new room to get started!
+                    Направи нова стая, за да започнеш!
                   </p>
                 </div>
               )}
@@ -203,10 +203,10 @@ export default function RoomsPage() {
                       >
                         <div>
                           <h3 className="text-white font-medium">
-                            Room {room.roomId}
+                            Стая {room.roomId}
                           </h3>
                           <p className="text-slate-300 text-sm">
-                            Game ID: {room.roomData?.id}
+                            Номер на стаята: {room.roomData?.id}
                           </p>
                           <p className="text-slate-400 text-xs">
                             {room.players?.length || 0}/
@@ -214,7 +214,7 @@ export default function RoomsPage() {
                           </p>
                           {room.players && room.players.length > 0 && (
                             <p className="text-slate-500 text-xs mt-1">
-                              Players:{" "}
+                              Играчи:{" "}
                               {room.players.map((p) => p.ref).join(", ")}
                             </p>
                           )}
@@ -225,7 +225,7 @@ export default function RoomsPage() {
                           className="bg-green-600 hover:bg-green-700 text-white"
                           disabled={!playerName.trim() || isRoomFull}
                         >
-                          {isRoomFull ? "Full" : "Join"}
+                          {isRoomFull ? "Пълна" : "Влез"}
                         </Button>
                       </div>
                     );
@@ -235,7 +235,7 @@ export default function RoomsPage() {
 
               {!playerName.trim() && activeRooms.length > 0 && !loading && (
                 <p className="text-amber-400 text-sm text-center">
-                  Enter your name to join active rooms
+                  Въведи името си, за да играеш в някоя от активните стаи
                 </p>
               )}
             </CardContent>
@@ -258,19 +258,19 @@ export default function RoomsPage() {
                   id="joinRoomId"
                   value={joinRoomId}
                   onChange={(e) => setJoinRoomId(e.target.value)}
-                  placeholder="Enter room ID..."
+                  placeholder="Въведи номер на стая..."
                   className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500"
                 />
               </div>
               <div>
                 <Label htmlFor="numberOfPlayers" className="text-slate-300">
-                  Number of Players
+                  Брой играчи
                 </Label>
                 <Input
                   id="numberOfPlayers"
                   value={numberOfPlayers}
                   onChange={(e) => setNumberOfPlayers(e.target.value)}
-                  placeholder="Enter number of players..."
+                  placeholder="Въведи брой играчи..."
                   type="number"
                   min="2"
                   max="8"
@@ -286,7 +286,7 @@ export default function RoomsPage() {
                   !numberOfPlayers.trim()
                 }
               >
-                Create Room
+                Създай Стая
               </Button>
             </CardContent>
           </Card>
