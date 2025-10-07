@@ -485,8 +485,8 @@ export default function Game() {
             <div className="heading w-full">
               <h1 className="text-center text-amber-300 font-serif text-xl">
                 {amIStoryTeller
-                  ? "Your turn to tell a story"
-                  : "Waiting for the storyteller"}
+                  ? "Твой ред да разкажеш история"
+                  : "Изчакай разказвача"}
               </h1>
               <div className="text-center text-amber-300 font-serif text-sm">
                 {roomInfo.message}
