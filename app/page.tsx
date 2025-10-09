@@ -40,7 +40,7 @@ export default function RoomsPage() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch("http://localhost:8080/games");//https://starfish-app-sdpej.ondigitalocean.app/games
+      const response = await fetch("https://starfish-app-sdpej.ondigitalocean.app/games");//https://starfish-app-sdpej.ondigitalocean.app/games
 
       if (!response.ok) {
         throw new Error(`Греешка със зареждането на активни стаи: ${response.status}`);

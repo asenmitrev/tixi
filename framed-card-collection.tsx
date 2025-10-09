@@ -205,7 +205,7 @@ export default function Game() {
 
   // Function to get or generate unique player ID
   useEffect(() => {
-    const sock = io("http://localhost:8080/", { //https://starfish-app-sdpej.ondigitalocean.app/
+    const sock = io("https://starfish-app-sdpej.ondigitalocean.app/", { //
       transports: ["polling"],
     });
     sock.on("connect", () => {
