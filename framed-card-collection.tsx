@@ -197,6 +197,7 @@ export default function Game() {
     []
   );
   const [chatInput, setChatInput] = useState("");
+  const [disconnected, setDisconnected] = useState(false);
   const chatBottomRef = useRef<HTMLDivElement | null>(null);
   // Track which card the player picked this turn
   const [pickedCardId, setPickedCardId] = useState<string | null>(null);
@@ -217,6 +218,7 @@ export default function Game() {
 
     sock.on("pong", () => {
       console.log("pong");
+      setDisconnected(false);
       lastPongRef.current = Date.now();
     });
     setSocket(sock);
@@ -224,6 +226,7 @@ export default function Game() {
     const pongInterval = setInterval(() => {
       if (lastPongRef.current && Date.now() - lastPongRef.current > 5000) {
         console.log("pong timeout");
+        setDisconnected(true);
         sock.disconnect();
         sock.connect();
         lastPongRef.current = Date.now();
@@ -508,9 +511,14 @@ export default function Game() {
             <h1 className="text-center text-amber-300 font-serif text-xl">
               {header}
             </h1>
+            {amIStoryTeller && stage === "wait_for_story" && (
+              <div className="text-center text-amber-300 font-serif text-sm">
+                Избери карта и напиши текст, който я описва
+              </div>
+            )}
             {activeStory && (
               <div className="text-center text-amber-300 font-serif text-sm">
-                The current story is: {activeStory}
+                Историята е : {activeStory}
               </div>
             )}
           </div>
@@ -713,6 +721,20 @@ export default function Game() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+      {/* Connection-lost overlay */}
+      {disconnected && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="mx-4 w-full max-w-sm rounded-xl border border-amber-700/60 bg-gradient-to-br from-amber-900/90 to-amber-950/95 p-6 text-center shadow-2xl">
+            <div className="mb-3 text-2xl">📡</div>
+            <div className="font-serif text-lg text-amber-200">
+              Връзката със сървъра временно прекъсната.
+            </div>
+            <div className="mt-2 text-sm text-amber-400/80">  
+              Опитваме се да се свържем отново...
+            </div>
           </div>
         </div>
       )}
