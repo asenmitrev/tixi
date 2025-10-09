@@ -659,7 +659,7 @@ export default function Game() {
                       htmlFor="story-input"
                       className="block text-amber-300 font-serif text-sm mb-2"
                     >
-                      What is your story for this card?
+                      Каква е историята ти за тази карта?
                     </label>
                     <textarea
                       id="story-input"
