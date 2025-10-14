@@ -744,11 +744,11 @@ export default function Game() {
           <div className="mx-4 w-full max-w-sm rounded-xl border border-amber-700/60 bg-gradient-to-br from-amber-900/90 to-amber-950/95 p-6 text-center shadow-2xl">
             <div className="mb-3 text-2xl">📡</div>
             <div className="font-serif text-lg text-amber-200">
-              Връзката със сървъра временно прекъсната.
+              Връзката със сървъра е временно прекъсната.
             </div>
             <div className="mt-2 text-sm text-amber-400/80">  
               Опитваме се да се свържем отново.
-              Ако рефрешнете браузъра може да ускорите процеса.
+              Ако рефрешнете браузъра, може да ускорите процеса.
             </div>
           </div>
         </div>
