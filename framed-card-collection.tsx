@@ -147,10 +147,10 @@ const PlayerCard = ({
             isMe ? "text-amber-300" : "text-amber-100"
           )}
         >
-          {isMe ? "You" : player.name}{" "}
+          {isMe ? "Ти" : player.name}{" "}
         </p>
         {player.storyTeller && (
-          <p className="text-xs text-amber-400/80">{"(Storyteller)"}</p>
+          <p className="text-xs text-amber-400/80">{"(Разказвач)"}</p>
         )}
       </div>
     </div>
@@ -211,20 +211,22 @@ export default function Game() {
     // const sock = io("https://starfish-app-sdpej.ondigitalocean.app/", { //
     //   transports: ["polling"],
     // });
-    const sock = io("https://starfish-app-sdpej.ondigitalocean.app/");
+    const params = new URLSearchParams(window.location.search);
+    const nameParam = params.get("name");
+    const sock = io("https://starfish-app-sdpej.ondigitalocean.app/"); //https://starfish-app-sdpej.ondigitalocean.app/
     sock.on("connect", () => {
       console.log("connected");
+      sock.emit("move", {
+        type: "naming",
+        name: nameParam,
+      });
     });
 
     sock.on("disconnect", () => {
       console.log("disconnected");
     });
 
-    sock.on("pong", () => {
-      console.log("pong");
-      setDisconnected(false);
-      lastPongRef.current = Date.now();
-    });
+
     setSocket(sock);
 
     const pongInterval = setInterval(() => {
@@ -234,6 +236,7 @@ export default function Game() {
         sock.disconnect();
         sock.connect();
         lastPongRef.current = Date.now();
+        const params = new URLSearchParams(window.location.search);
         const nameParam = params.get("name");
         console.log(nameParam, " here? Joining room");
 
@@ -247,7 +250,6 @@ export default function Game() {
     }, 1000);
 
     // Extract URL parameters and join room
-    const params = new URLSearchParams(window.location.search);
     const roomIdParam = params.get("roomId");
 
     // Get unique player ID from localStorage
@@ -280,6 +282,15 @@ export default function Game() {
             }
       ) => {
         lastPongRef.current = Date.now();
+        const params = new URLSearchParams(window.location.search);
+        const nameParam = params.get("name");
+        if("me" in state && nameParam != state?.me.name) {
+          sock.emit("move", {
+            type: "naming",
+            name: nameParam,
+          });
+        }
+        setDisconnected(false)
         if ("message" in state) {
           setRoomInfo((prev) => (_.isEqual(prev, state) ? prev : state));
         } else {
@@ -351,9 +362,7 @@ export default function Game() {
   useEffect(() => {
     if (socket) {
       const params = new URLSearchParams(window.location.search);
-
       const nameParam = params.get("name");
-      console.log(nameParam, " here?");
       socket?.emit("move", {
         type: "naming",
         name: nameParam,

@@ -83,7 +83,7 @@ export default function RoomsPage() {
       playerNameInputRef.current?.focus();
       return;
     }
-
+    console.log(roomId, )
     router.push(
       `/rooms/${roomId}?name=${encodeURIComponent(
         playerName
@@ -92,7 +92,7 @@ export default function RoomsPage() {
       )}&numberOfPlayers=${encodeURIComponent(
         // Get numberOfPlayers from the room data
         activeRooms.find((room) => room.roomId === roomId)?.roomData
-          ?.numberOfPlayers || "2"
+          ?.numberOfPlayers || "3"
       )}`
     );
   };
@@ -258,7 +258,7 @@ export default function RoomsPage() {
                   id="joinRoomId"
                   value={joinRoomId}
                   onChange={(e) => setJoinRoomId(e.target.value)}
-                  placeholder="Въведи номер на стая..."
+                  placeholder="Въведи име на стая..."
                   className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500"
                 />
               </div>
@@ -272,7 +272,7 @@ export default function RoomsPage() {
                   onChange={(e) => setNumberOfPlayers(e.target.value)}
                   placeholder="Въведи брой играчи..."
                   type="number"
-                  min="2"
+                  min="3"
                   max="8"
                   className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500"
                 />
