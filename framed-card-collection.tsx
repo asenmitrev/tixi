@@ -717,21 +717,24 @@ export default function Game() {
             )}
 
             {/* Vote section for wait_for_vote stage */}
-            {stage === "wait_for_vote" && !amIStoryTeller && (
+            {stage === "wait_for_vote" && (
               <div className="mt-6 p-4 bg-gradient-to-br from-amber-900/40 to-amber-950/40 backdrop-blur-sm rounded-lg border border-amber-700/50">
                 <div className="space-y-4">
                   <p className="text-amber-300 font-serif text-sm text-center">
-                    Мислиш, ли че тази карта описва историята?
+                    {!amIStoryTeller && "Мислиш, ли че тази карта описва историята?" }
+                    {amIStoryTeller && "Каква интересна карта e избрал пък този..." }
                   </p>
-                  <button
-                    onClick={() => {
-                      onSendVote(selectedCard.id);
-                      closeModal();
-                    }}
-                    className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-serif px-6 py-3 rounded-md transition-all duration-200 shadow-lg"
-                  >
-                    Гласувай за тази карта
-                  </button>
+                  {!amIStoryTeller &&
+                     <button
+                      onClick={() => {
+                        onSendVote(selectedCard.id);
+                        closeModal();
+                      }}
+                      className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-serif px-6 py-3 rounded-md transition-all duration-200 shadow-lg"
+                    >
+                      Гласувай за тази карта
+                    </button>
+                  }
                 </div>
               </div>
             )}
