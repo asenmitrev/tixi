@@ -151,6 +151,7 @@ export default function FramedImageGallery() {
           <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] z-10 pointer-events-none"></div>
           <Image
             src={item.src || "/avatar.jpg"}
+            unoptimized={true}
             alt={item.alt}
             fill
             className="object-cover transition-transform duration-300 hover:scale-110"

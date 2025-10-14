@@ -40,6 +40,7 @@ export default function FramedImageCard() {
               <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] z-10 pointer-events-none"></div>
               <Image
                 src="/cards/card.jpg"
+                unoptimized={true}
                 alt="Still life with hat, watch, gun and bottle"
                 fill
                 className="object-cover"
